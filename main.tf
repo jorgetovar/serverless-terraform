@@ -94,6 +94,24 @@ resource "aws_apigatewayv2_stage" "lambda" {
   api_id      = aws_apigatewayv2_api.lambda.id
   name        = "stage"
   auto_deploy = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_log_group.arn
+
+    format = jsonencode({
+      requestId               = "$context.requestId"
+      sourceIp                = "$context.identity.sourceIp"
+      requestTime             = "$context.requestTime"
+      protocol                = "$context.protocol"
+      httpMethod              = "$context.httpMethod"
+      resourcePath            = "$context.resourcePath"
+      routeKey                = "$context.routeKey"
+      status                  = "$context.status"
+      responseLength          = "$context.responseLength"
+      integrationErrorMessage = "$context.integrationErrorMessage"
+    }
+    )
+  }
 }
 
 resource "aws_apigatewayv2_integration" "hello_world" {
@@ -110,7 +128,7 @@ resource "aws_apigatewayv2_route" "hello_world" {
 }
 
 resource "aws_cloudwatch_log_group" "api_log_group" {
-  name              = "/aws/serverless_lambda_api/${aws_apigatewayv2_api.lambda.name}"
+  name              = "/aws/api_gw/${aws_apigatewayv2_api.lambda.name}"
   retention_in_days = 14
 }
 
@@ -130,10 +148,10 @@ data "archive_file" "layer" {
 }
 
 resource "aws_lambda_layer_version" "lambda_layer" {
-  filename            = data.archive_file.layer.output_path
-  layer_name          = "community-layer"
-  source_code_hash    = data.archive_file.layer.output_base64sha256
-  compatible_runtimes = ["python3.9"]
+  filename                 = data.archive_file.layer.output_path
+  layer_name               = "community-layer"
+  source_code_hash         = data.archive_file.layer.output_base64sha256
+  compatible_runtimes      = ["python3.9"]
   compatible_architectures = ["x86_64"]
 }
 

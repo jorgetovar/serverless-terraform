@@ -7,6 +7,8 @@ terraform.tfstate.backup
 
 hello_world.zip
 response.json
+.layer
+layer.zip
 
 # AWS credentials file
 .aws/credentials

@@ -53,6 +53,7 @@ resource "aws_lambda_function" "hello_world" {
   handler          = "app.lambda_handler"
   source_code_hash = data.archive_file.lambda_hello_world.output_base64sha256
   role             = aws_iam_role.lambda_exec.arn
+  layers           = [aws_lambda_layer_version.lambda_layer.arn]
 }
 
 resource "aws_cloudwatch_log_group" "hello_world" {
@@ -121,5 +122,31 @@ resource "aws_lambda_permission" "api_lambda_permission" {
   source_arn    = "${aws_apigatewayv2_api.lambda.execution_arn}/*/*"
 }
 
+
+data "archive_file" "layer" {
+  type        = "zip"
+  source_dir  = "${path.module}/layer"
+  output_path = "${path.module}/layer.zip"
+}
+
+resource "aws_lambda_layer_version" "lambda_layer" {
+  filename            = data.archive_file.layer.output_path
+  layer_name          = "community-layer"
+  source_code_hash    = data.archive_file.layer.output_base64sha256
+  compatible_runtimes = ["python3.9"]
+  compatible_architectures = ["x86_64"]
+}
+
+resource "null_resource" "pip_install" {
+  triggers = {
+    shell_hash = sha256(file("${path.module}/hello_world/requirements.txt"))
+  }
+
+  provisioner "local-exec" {
+    command = "python3 -m pip install -r ${path.module}/hello_world/requirements.txt -t ${path.module}/layer/python"
+  }
+
+  depends_on = [data.archive_file.layer]
+}
 
 

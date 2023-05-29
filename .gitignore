@@ -1,0 +1,23 @@
+# Terraform-specific files
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+
+# AWS credentials file
+.aws/credentials
+
+.idea/
+
+# AWS CLI configuration file
+.aws/config
+
+# AWS SAM (Serverless Application Model) build artifacts
+.sam/
+
+# Logs and other generated files
+*.log
+*.log.*
+*.swp
+.DS_Store
+

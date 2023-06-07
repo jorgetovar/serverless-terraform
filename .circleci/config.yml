@@ -54,7 +54,7 @@ jobs:
           name: Terraform destroy
           command: |
             terraform apply -auto-approve tfdestroy
-            
+
 workflows:
   version: 2
   plan_approve_apply:

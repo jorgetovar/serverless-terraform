@@ -21,7 +21,7 @@ jobs:
       - name: Terraform Init & Plan
         run: |
           terraform init -input=false
-          terraform plan -out tfapply
+          terraform plan -out
 
       - name: Persist Terraform files
         uses: actions/upload-artifact@v2
@@ -49,5 +49,5 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          terraform apply -auto-approve tfapply
+          terraform apply -auto-approve
 

@@ -1,78 +1,26 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  plan-apply:
-    working_directory: /tmp/project
+  say-hello:
+    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
       - run:
-          name: Terraform init & plan
-          command: |
-            terraform init -input=false
-            terraform plan -out tfapply
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  apply:
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Terraform apply
-          command: |
-            terraform apply -auto-approve tfapply
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  plan-destroy:
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Terraform create destroy plan
-          command: |
-            terraform plan -destroy -out tfdestroy
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  destroy:
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Terraform destroy
-          command: |
-            terraform apply -auto-approve tfdestroy
-            
+          name: "Say hello"
+          command: "echo Hello, World!"
+
+# Orchestrate jobs using workflows
+# See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  manage-infra:
+  say-hello-workflow:
     jobs:
-      - plan-apply
-      - hold-apply:
-          type: approval
-          requires:
-            - plan-apply
-      - apply:
-          requires:
-            - hold-apply
-      - plan-destroy:
-          requires:
-            - apply
-      - hold-destroy:
-          type: approval
-          requires:
-            - plan-destroy
-      - destroy:
-          requires:
-            - hold-destroy
+      - say-hello

@@ -11,7 +11,7 @@ jobs:
           name: Terraform init & plan
           command: |
             terraform init -input=false
-            terraform plan -out tfapply
+            terraform plan
       - persist_to_workspace:
           root: .
           paths:
@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Terraform apply
           command: |
-            terraform apply -auto-approve tfapply
+            terraform apply -auto-approve
       - persist_to_workspace:
           root: .
           paths:
@@ -39,7 +39,7 @@ jobs:
       - run:
           name: Terraform create destroy plan
           command: |
-            terraform plan -destroy -out tfdestroy
+            terraform plan -destroy
       - persist_to_workspace:
           root: .
           paths:
@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Terraform destroy
           command: |
-            terraform apply -auto-approve tfdestroy
+            terraform apply -auto-approve
 
 workflows:
 

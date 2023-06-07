@@ -1,5 +1,13 @@
 terraform {
 
+  cloud {
+    organization = "jorgetovar"
+
+    workspaces {
+      name = "serverless-terraform"
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"

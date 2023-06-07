@@ -72,12 +72,10 @@ workflows:
           requires:
             - hold-apply
       - plan-destroy:
-          requires:
-            - apply
           filters:
             branches:
               only:
-                - delete-resources
+                - main
       - hold-destroy:
           type: approval
           requires:

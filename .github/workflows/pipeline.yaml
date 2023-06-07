@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - destroy-branch
+      - delete-resources
 
 jobs:
   plan-apply:
@@ -21,7 +21,7 @@ jobs:
       - name: Terraform Init & Plan
         run: |
           terraform init -input=false
-          terraform plan -out
+          terraform plan -out tfapply
 
       - name: Persist Terraform files
         uses: actions/upload-artifact@v2
@@ -49,5 +49,55 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          terraform apply -auto-approve
+          terraform apply -auto-approve tfapply
 
+  plan-destroy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/delete-resources'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "1.0.0"
+
+      - name: Attach Terraform files
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-files
+          path: ./
+
+      - name: Terraform Create Destroy Plan
+        run: |
+          terraform plan -destroy -out tfdestroy
+
+      - name: Persist Terraform files
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-files
+          path: ./
+
+  destroy:
+    runs-on: ubuntu-latest
+    needs: plan-destroy
+    if: github.ref == 'refs/heads/delete-resources'  # Specify the branch where you want to activate the destroy job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "1.0.0"
+
+      - name: Attach Terraform files
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-files
+          path: ./
+
+      - name: Terraform Destroy
+        run: |
+          terraform apply -auto-approve tfdestroy

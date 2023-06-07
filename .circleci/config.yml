@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 jobs:
   plan-apply:
@@ -56,8 +56,7 @@ jobs:
             terraform apply -auto-approve tfdestroy
             
 workflows:
-  version: 2
-  plan_approve_apply:
+  manage-infra:
     jobs:
       - plan-apply
       - hold-apply:

@@ -59,7 +59,11 @@ workflows:
 
   manage-infra:
     jobs:
-      - plan-apply
+      - plan-apply:
+          filters:
+            branches:
+              only:
+                - main
       - hold-apply:
           type: approval
           requires:
@@ -70,6 +74,10 @@ workflows:
       - plan-destroy:
           requires:
             - apply
+          filters:
+            branches:
+              only:
+                - delete-resources
       - hold-destroy:
           type: approval
           requires:

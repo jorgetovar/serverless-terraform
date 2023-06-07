@@ -16,7 +16,6 @@ jobs:
           root: .
           paths:
             - .
-
   apply:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -31,7 +30,6 @@ jobs:
           root: .
           paths:
             - .
-
   plan-destroy:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -46,7 +44,6 @@ jobs:
           root: .
           paths:
             - .
-
   destroy:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -57,6 +54,7 @@ jobs:
           name: Terraform destroy
           command: |
             terraform apply -auto-approve tfdestroy
+            
 workflows:
   version: 2
   plan_approve_apply:

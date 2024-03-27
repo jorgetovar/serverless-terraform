@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "message": "We are going to create a DevOps as a service powered by IA, ChatGPT and Copilot",
+            "message": "We are going to create a DevOps as a service powered by IA, ChatGPT and GH Copilot",
             "random_info": random_info
 
         }),
